@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Expert Help</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <style>
+    /* div {
+            border: solid #89AEB2 1px;
+            display: inline-block;
+            width: 48%;height: 100%;
+        } */
+  </style>
+</head>
+
+<body>
+  <div class="container" style=" height: 250px; width: 100%">
+    <!-- <div class="row" style=" height: 250px; width: 100%">
+            <div class="col-6">
+              
+                <canvas id="myChartCO3"></canvas>
+            </div>
+
+            <div class="col-6">
+               
+                <canvas id="myChartph"></canvas>
+            </div>
+        </div> -->
+  </div>
+
+  <div class="container">
+    <h1>BETA</h1>
+    <div class="row">
+      <div name="x" class="col-12">
+        <canvas id="line-chart" width="800" height="300"></canvas>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-6">
+        <table class="table table-dark table-striped">
+          <thead>
+            <tr>
+              <th>Susceptibility</th>
+              <th>Severity Index</th>
+              <th>Base value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>High</td>
+              <td>1,000</td>
+              <td>1,000</td>
+            </tr>
+            <tr>
+              <td>Medium</td>
+              <td>100</td>
+              <td>100</td>
+            </tr>
+            <tr>
+              <td>Low</td>
+              <td>10</td>
+              <td>10</td>
+            </tr>
+            <tr>
+              <td>None</td>
+              <td>0</td>
+              <td>0</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-6">
+        <div class="row">
+          <div class="col-6">
+            <p>Mức POF mong muốn</p>
+          </div>
+          <div class="col-6">
+            <input type="number" name="pof" id="pof" style="width: 100%;">
+          </div>
+          <div class="col-6">
+            <p>Số tháng tính từ mốc kiểm định</p>
+          </div>
+          <div class="col-6">
+            <input type="number" name="month" id="month" style="width: 100%;">
+          </div>
+          <div class="col-4">
+            <input type="button" value="One Time" style="width: 100%;" onclick="setPofPointOneTime()">
+          </div>
+          <div class="col-4">
+            <input type="button" value="All Time" style="width: 100%;" onclick="setPofPointAllTime()">
+          </div>
+          <div class="col-4">
+            <input type="button" value="Reset" style="width: 100%;" onclick="setPofPointReset()">
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-6">
+        <h4>Hỗ trợ tính toán</h4>
+        <div class="row">
+          <div class="col-6">
+            <p>Mức susceptibility mong muốn</p>
+          </div>
+          <div class="col-6">
+            <div class="btn-group">
+              <select name="sus" id="sus">
+                <option value="_high">High</option>
+                <option value="_medium">Medium</option>
+                <option value="_low">Low</option>
+                <option value="_none">None</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-6">
+            <p>Mật độ CO3 hiện tại (ppm)</p>
+          </div>
+          <div class="col-6">
+            <input type="number" name="co3" id="co3" style="width: 100%;">
+          </div>
+          <div class="col-6">
+            <p>Mức PH hiện tại</p>
+          </div>
+          <div class="col-6">
+            <input type="number" name="ph" id="ph" style="width: 100%;">
+          </div>
+          <div class="col-6">
+            <input type="button" value="Predict Co3 Contrentrat" onclick="myFunction()" style="width: 100%;">
+          </div>
+          <div class="col-6">
+            <input type="button" value="Predict PH" onclick="setPofPointOneTime()" style="width: 100%;">
+          </div>
+          <div class="col-12">
+            <textarea name="demo" id="demo" cols="50" rows="4" style="width: 100%;"></textarea>
+          </div>
+        </div>
+
+
+      </div>
+
+    </div>
+
+  </div>
+  <script>
+    var a = 0;
+    function myFunction() {
+      let ph = parseFloat(document.getElementById('ph').value);
+      let co3 = parseFloat(document.getElementById('co3').value);
+      let sus = document.getElementById('sus').value
+      if (a == 0) {
+        document.getElementById("demo").innerHTML = ph + co3;
+        a = 1;
+      }
+      else {
+        document.getElementById("demo").innerHTML = sus;
+        a = 0;
+      }
+    }
+  </script>
+
+
+  <script>
+    function range(start, end, step) {
+      var ans = [];
+      for (let i = start; i <= end; i += step) {
+        ans.push(i);
+      }
+      return ans;
+    }
+
+
+    let _arr = range(0, 72, 1);
+    var _high = _arr.map(x => 1000 * Math.pow(Math.max(x / 12, 1), 1.1));
+    var _medium = _arr.map(x => 100 * Math.pow(Math.max(x / 12, 1), 1.1));
+    var _low = _arr.map(x => 10 * Math.pow(Math.max(x / 12, 1), 1.1));
+    const null_array = new Array(_arr.length).fill(null);
+    var ctx = document.getElementById("line-chart").getContext('2d');
+    var total_chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: _arr,
+        datasets: [{
+          data: _high,
+          label: "High",
+          borderColor: "#ff0000",
+          backgroundColor: "#ff0000",
+          labelString: 'probability',
+          fill: false,
+          pointStyle: 'circle',
+          pointRadius: 3
+        },
+        {
+          data: _medium,
+          label: "Medium",
+          borderColor: "#ff9933",
+          backgroundColor: "#ff9933",
+          fill: false,
+          pointStyle: 'circle',
+          pointRadius: 3
+        },
+        {
+          data: _low,
+          label: "Low",
+          borderColor: "#ccff66",
+          backgroundColor: "#ccff66",
+          fill: false,
+          pointStyle: 'circle',
+          pointRadius: 3
+        },
+        {
+          data: null_array,
+          label: "Point",
+          borderColor: "#ccff66",
+          backgroundColor: "#222222",
+          fill: true,
+          pointRadius: 15,
+          pointHoverRadius: 50,
+          showLine: true,
+          pointStyle: 'rectRot'
+        }
+        ]
+      },
+      options: {
+        title: {
+          display: true,
+          text: 'Carbonate Stress Corrosion Craking Damage Factor'
+        },
+
+        scales: {
+          yAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: 'Damage Factor'
+            }
+          }],
+
+          xAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: 'Month'
+            }
+          }]
+        }
+
+        //concentration level
+
+      }
+    });
+
+    function setPofPointOneTime() {
+      setPofPointReset();
+      _pof = parseFloat(document.getElementById('pof').value);
+      _index = parseInt(document.getElementById('month').value);
+      console.log(_index, _pof);
+      total_chart.data.datasets[3].data[_index - 1] = _pof;
+      total_chart.update();
+    }
+    function setPofPointAllTime() {
+      setPofPointReset();
+      _pof = parseFloat(document.getElementById('pof').value);
+      total_chart.data.datasets[3].data.fill(_pof);
+      total_chart.update();
+    }
+    function setPofPointReset() {
+      total_chart.data.datasets[3].data.fill(null);
+      total_chart.update();
+    }
+  </script>
+</body>
+
+</html>
